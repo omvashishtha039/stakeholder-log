@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Add Stakeholder</title>
+	<link rel="stylesheet" href="assets/css/main.css" />
+</head>
+<body class="is-preload">
+	<div id="page-wrapper">
+
+		<!-- Header -->
+		<header id="header">
+			<h1><a href="index.html">Stakeholder</a> Log</h1>
+			<nav id="nav">
+				<ul>
+					<li><a href="dashboard.html">Dashboard</a></li>
+					<li><a href="Stake_List.html">Stakeholder List</a></li>
+					<li><a href="Communication.html">Communication Log</a></li>
+					<li><a href="Reports.html">Reports</a></li>
+					<li id="user-info"></li>
+				</ul>
+			</nav>
+		</header>
+
+		<!-- Main -->
+		<section id="main" class="container">
+			<header class="major">
+				<h2>Add New Stakeholder</h2>
+			</header>
+
+			<form id="stakeholder-form" class="box" method="POST">
+				<div class="row gtr-50 gtr-uniform">
+					<div class="col-6 col-12-mobilep">
+						<input type="text" name="name" id="name" placeholder="Full Name" required />
+					</div>
+					<div class="col-6 col-12-mobilep">
+						<input type="email" name="email" id="email" placeholder="Email" required />
+					</div>
+					<div class="col-6 col-12-mobilep">
+						<input type="text" name="phone" id="phone" placeholder="Phone Number" />
+					</div>
+					<div class="col-6 col-12-mobilep">
+						<input type="text" name="role" id="role" placeholder="Role/Title" />
+					</div>
+					<div class="col-12">
+						<input type="text" name="organization" id="organization" placeholder="Organization/Company" />
+					</div>
+					<div class="col-12">
+						<textarea name="notes" id="notes" placeholder="Notes / Context" rows="5"></textarea>
+					</div>
+					<div class="col-12">
+						<ul class="actions special">
+							<li><input type="submit" value="Add Stakeholder" class="primary" /></li>
+						</ul>
+					</div>
+				</div>
+			</form>
+		</section>
+
+		<!-- Footer -->
+		<footer id="footer">
+			<p>&copy; FOMM. Built by Om Vashishtha</p>
+		</footer>
+
+	</div>
+
+	
+	<!-- jQuery -->
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+	<!-- Required Plugins -->
+	<script src="assets/js/browser.min.js"></script> <!-- 👈 THIS FIXES the error -->
+	<script src="assets/js/breakpoints.min.js"></script>
+	<script src="assets/js/util.js"></script>
+	<script src="assets/js/jquery.dropotron.min.js"></script>
+
+	<!-- Main -->
+	<script src="assets/js/main.js"></script>
+
+
+
+	<!-- JWT User Logic -->
+	<script>
+		document.getElementById("stakeholder-form").addEventListener("submit", function(e) {
+			e.preventDefault();
+			
+			const token = localStorage.getItem("token");
+
+			fetch('http://127.0.0.1:5000/add-stakeholder', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${token}`  // Add JWT token here
+				},
+				body: JSON.stringify({
+					name: document.getElementById("name").value,
+					email: document.getElementById("email").value,
+					phone: document.getElementById("phone").value,
+					role: document.getElementById("role").value,
+					organization: document.getElementById("organization").value,
+					notes: document.getElementById("notes").value
+				})
+			})
+			.then(response => response.json())
+			.then(data => {
+				if (data.message) {
+					alert("Stakeholder added successfully!");
+					// Clear form or redirect
+				} else {
+					alert("Error: " + data.error);
+				}
+			})
+			.catch(error => {
+				console.error("Error:", error);
+				alert("Error: Failed to fetch");
+			});
+		});
+	</script>
+</body>
+</html>

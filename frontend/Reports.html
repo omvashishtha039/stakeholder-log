@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Stakeholder Communication Reports</title>
+	<link rel="stylesheet" href="assets/css/main.css" />
+</head>
+<body class="is-preload">
+	<div id="page-wrapper">
+
+		<!-- Header -->
+		<header id="header">
+			<h1><a href="index.html">Project</a> Dashboard</h1>
+			<nav id="nav">
+				<ul>
+					<li><a href="index.html">Dashboard</a></li>
+					<li><a href="Add_Stake.html">Add Stakeholder</a></li>
+					<li><a href="Stake_List.html">Stakeholder List</a></li>
+					<li><a href="Communication.html">Communication Log</a></li>
+					<li id="user-info"></li>
+				</ul>
+			</nav>
+		</header>
+
+		<!-- Main -->
+		<section id="main" class="container">
+			<header class="major">
+				<h2>Reports</h2>
+			</header>
+
+			<div class="table-wrapper">
+				<table>
+					<thead>
+						<tr>
+							<th>Stakeholder</th>
+							<th>Type</th>
+							<th>Date</th>
+							<th>Notes</th>
+						</tr>
+					</thead>
+					<tbody id="report-table-body">
+						<!-- Fetched reports will appear here -->
+					</tbody>
+				</table>
+			</div>
+		</section>
+
+		<!-- Footer -->
+		<footer id="footer">
+			<p>&copy; FOMM. Built by Om Vashishtha</p>
+		</footer>
+	</div>
+
+	<!-- Scripts -->
+	<script src="assets/js/jquery.min.js"></script>
+	<script src="assets/js/main.js"></script>
+
+	<script>
+		document.addEventListener("DOMContentLoaded", () => {
+			const token = localStorage.getItem("token");
+			if (!token) {
+				alert("Please log in first.");
+				window.location.href = "Login.html";
+				return;
+			}
+
+			const reportTable = document.getElementById("report-table-body");
+
+			fetch("http://127.0.0.1:5000/get-reports", {
+				headers: {
+					"Authorization": "Bearer " + token
+				}
+			})
+			.then(res => res.json())
+			.then(data => {
+				data.forEach(log => {
+					const row = `<tr>
+						<td>${log.stakeholder_name}</td>
+						<td>${log.type}</td>
+						<td>${log.date}</td>
+						<td>${log.notes}</td>
+					</tr>`;
+					reportTable.innerHTML += row;
+				});
+			})
+			.catch(err => {
+				console.error("Failed to load reports:", err);
+			});
+		});
+	</script>
+</body>
+</html>

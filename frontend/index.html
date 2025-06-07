@@ -1,0 +1,213 @@
+<!DOCTYPE HTML>
+<!--
+	Developed by Om Vashishtha @ FOMM
+-->
+<html>
+<head>
+	<title>Stakeholder Log</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+	<link rel="stylesheet" href="assets/css/main.css" />
+</head>
+<body class="landing is-preload">
+<div id="page-wrapper">
+
+	<!-- ===== HEADER (Navigation Bar) ===== -->
+	<header id="header" class="alt">
+		<h1><a href="index.html">Stakeholder</a> Log</h1>
+		<nav id="nav">
+			<ul>
+				<li><a href="index.html">Home</a></li>
+				<li>
+					<a href="#" class="icon solid fa-angle-down">Layouts</a>
+					<ul>
+						<li><a href="Add_Stake.html">Add Stakeholder</a></li>
+						<li><a href="Stake_List.html">Stakeholder List</a></li>
+						<li><a href="Communication.html">Communication Log</a></li>
+						<li><a href="Reports.html">Reports</a></li>
+					</ul>
+				</li>
+				<li id="auth"></li>
+				<li><a href="Login.html" class="button" id="login-button">Login</a></li>
+				<li><a href="Signup.html" class="button" id="signup-button">Sign Up</a></li>
+			</ul>
+		</nav>
+	</header>
+
+	<!-- ===== HERO BANNER (Call-to-Action) ===== -->
+	<section id="banner">
+		<h2>Stakeholder Log</h2>
+		<h3>Track your stakeholder communications effortlessly</h3>
+		<p>Stay updated on interactions, follow-ups, and key insights.</p>
+
+		<ul class="actions special">
+			<!-- Require login to access these -->
+			<li><a href="Login.html" class="button primary" onclick="checkLoginAndRedirect('addStakeholder')">Add New Stakeholder</a></li>
+			<li><a href="Login.html" class="button" onclick="checkLoginAndRedirect('logCommunication')">Log New Communication</a></li>
+		</ul>
+	</section>
+
+	<!-- ===== MAIN SECTION ===== -->
+	<section id="main" class="container">
+
+		<!-- Intro Box -->
+		<section class="box special">
+			<header class="major">
+				<h2>Stay Organized & Improve Collaboration</h2>
+				<p>Effective communication is key to successful stakeholder management. With this dashboard, you can monitor all interactions in one place, ensure timely follow-ups to maintain relationships, and make data-driven decisions with real-time insights.</p>
+			</header>
+			<span class="image featured"><img src="images/pic01.jpg" alt="" /></span>
+		</section>
+
+		<!-- Feature Stats (Populated via JS) -->
+		<section class="box special features">
+			<div class="features-row">
+				<section>
+					<span class="icon solid major fa-bolt accent2"></span>
+					<h3><b>Total Stakeholders</b></h3>
+					<p id="total-stakeholders">Loading...</p>
+				</section>
+				<section>
+					<span class="icon solid major fa-chart-area accent3"></span>
+					<h3><b>Recent Communications</b></h3>
+					<p id="recent-communications">Loading...</p>
+				</section>
+			</div>
+			<div class="features-row">
+				<section>
+					<span class="icon solid major fa-cloud accent4"></span>
+					<h3><b>Upcoming Follow-Ups:</b></h3>
+					<p id="pending-followups">Loading...</p>
+				</section>
+				<section>
+					<span class="icon solid major fa-lock accent5"></span>
+					<h3><b>Pending Actions</b></h3>
+					<p id="pending-actions">Loading...</p>
+				</section>
+			</div>
+		</section>
+	</section>
+
+	<!-- ===== CALL TO ACTION ===== -->
+	<section id="cta">
+		<h2>Thank You for Visiting Our Page!</h2>
+		<p>We appreciate your interest in our Stakeholder Log application. If you have any questions or need assistance, feel free to reach out.</p>
+	</section>
+
+	<!-- ===== FOOTER (Social + Credit) ===== -->
+	<footer id="footer">
+		<ul class="icons">
+			<li><a href="https://x.com/omvashishtha039" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+			<li><a href="https://www.linkedin.com/in/omvashishtha039/" class="icon brands fa-linkedin"><span class="label">Linkedin</span></a></li>
+			<li><a href="https://github.com/omvashishtha039" class="icon brands fa-github"><span class="label">Github</span></a></li>
+			<li><a href="https://www.credly.com/users/omvashishtha039" class="icon brands fa-dribbble"><span class="label">Credly</span></a></li>
+		</ul>
+		<ul class="copyright">
+			<li>&copy; FOMM. All rights reserved.</li>
+			<li>Design: Om Vashishtha <a href="https://www.linkedin.com/in/omvashishtha039/">FOMM</a></li>
+		</ul>
+	</footer>
+</div>
+
+<!-- ===== SCRIPT FILES ===== -->
+<script src="assets/js/jquery.min.js"></script>
+<script src="assets/js/jquery.dropotron.min.js"></script>
+<script src="assets/js/jquery.scrollex.min.js"></script>
+<script src="assets/js/browser.min.js"></script>
+<script src="assets/js/breakpoints.min.js"></script>
+<script src="assets/js/util.js"></script>
+<script src="assets/js/main.js"></script>
+
+<!-- ===== JWT Login User Display & Auth Button Visibility ===== -->
+<script>
+	function updateHeaderWithUserInfo() {
+		const token = localStorage.getItem("token");
+		const userInfo = document.getElementById("user-info");
+		const signupButton = document.getElementById("signup-button");
+		const loginButton = document.getElementById("login-button");
+
+		if (!token) {
+			userInfo.innerHTML = '';
+			signupButton.style.display = 'inline-block';
+			loginButton.style.display = 'inline-block';
+			return;
+		}
+
+		// Fetch user info from backend
+		fetch("http://127.0.0.1:5000/user-info", {
+			method: "GET",
+			headers: {
+				"Authorization": "Bearer " + token
+			}
+		})
+		.then(res => {
+			if (!res.ok) throw new Error("Unauthorized");
+			return res.json();
+		})
+		.then(data => {
+			userInfo.innerHTML = `
+				<span>Welcome, ${data.name}</span>
+				<button onclick="logout()" style="margin-left:10px; padding:5px 10px;">Logout</button>
+			`;
+			signupButton.style.display = 'none';
+			loginButton.style.display = 'none';
+		})
+		.catch(err => {
+			console.error("Login check failed:", err);
+			localStorage.removeItem("token");
+			userInfo.innerHTML = '';
+			signupButton.style.display = 'inline-block';
+			loginButton.style.display = 'inline-block';
+		});
+	}
+
+	function logout() {
+		localStorage.removeItem("token");
+		alert("Logged out successfully!");
+		window.location.href = "Login.html";
+	}
+
+	// Redirect users based on login status
+	function checkLoginAndRedirect(action) {
+		const token = localStorage.getItem("token");
+		if (!token) {
+			alert("Please login to continue.");
+			window.location.href = "Login.html";
+		} else {
+			if (action === "addStakeholder") {
+				window.location.href = "Add_Stake.html";
+			} else if (action === "logCommunication") {
+				window.location.href = "Communication.html";
+			}
+		}
+	}
+
+	// Call on page load
+	updateHeaderWithUserInfo();
+</script>
+
+<!-- ===== DASHBOARD STATS FETCH FROM BACKEND ===== -->
+<script>
+	const token = localStorage.getItem("token");
+
+	fetch("http://localhost:5000/dashboard-stats", {
+		method: "GET",
+		headers: {
+			"Authorization": "Bearer " + token
+		}
+	})
+	.then(res => res.json())
+	.then(data => {
+		document.getElementById("total-stakeholders").textContent = data.total_stakeholders;
+		document.getElementById("recent-communications").textContent = data.recent_communications;
+		document.getElementById("pending-followups").textContent = data.pending_followups;
+		document.getElementById("pending-actions").textContent = data.pending_actions;
+	})
+	.catch(err => {
+		console.error("Failed to load dashboard stats", err);
+		alert("Error fetching stats");
+	});
+</script>
+
+</body>
+</html>

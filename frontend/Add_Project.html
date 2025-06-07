@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Add Project</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f6f8;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 50px auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;  
+      color: #333;
+    }
+
+    label {
+      font-weight: 600;
+      display: block;
+      margin-bottom: 6px;
+      color: #444;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 15px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #e7aa99;
+      color: #fff;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #eeb7a7;
+    }
+
+    .message {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 15px;
+    }
+
+    .error {
+      color: rgb(163, 35, 35);
+    }
+
+    .success {
+      color: #287c44;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Add New Project</h2>
+    <form id="projectForm">
+      <label for="name">Project Name</label>
+      <input type="text" id="name" name="name" required>
+
+      <label for="description">Description</label>
+      <textarea id="description" name="description" rows="4" required></textarea>
+
+      <label for="deadline">Deadline</label>
+      <input type="date" id="deadline" name="deadline" required>
+
+      <button type="submit">Add Project</button>
+    </form>
+    <div class="message" id="messageBox"></div>
+  </div>
+
+  <script>
+    document.getElementById('projectForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const name = document.getElementById('name').value.trim();
+      const description = document.getElementById('description').value.trim();
+      const deadline = document.getElementById('deadline').value;
+
+      const token = localStorage.getItem('token');
+      const messageBox = document.getElementById('messageBox');
+
+      if (!token) {
+        messageBox.innerHTML = '<span class="error">You must be logged in to add a project.</span>';
+        return;
+      }
+
+      try {
+        const response = await fetch('http://localhost:5000/api/projects', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': token
+          },
+          body: JSON.stringify({ name, description, deadline })
+        });
+
+        const result = await response.json();
+
+        if (response.status === 201) {
+          messageBox.innerHTML = '<span class="success">' + result.message + '</span>';
+          document.getElementById('projectForm').reset();
+        } else {
+          messageBox.innerHTML = '<span class="error">' + result.message + '</span>';
+        }
+      } catch (err) {
+        console.error(err);
+        messageBox.innerHTML = '<span class="error">Something went wrong. Try again.</span>';
+      }
+    });
+  </script>
+</body>
+</html>

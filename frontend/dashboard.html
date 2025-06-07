@@ -1,0 +1,219 @@
+<!DOCTYPE HTML>
+<!--
+	Developed by Om Vashishtha @ FOMM
+-->
+<html>
+<head>
+	<title>Stakeholder Log</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+	<link rel="stylesheet" href="assets/css/main.css" />
+</head>
+<body class="landing is-preload">
+	<div id="page-wrapper">
+
+		<!-- Header -->
+		<header id="header" class="alt">
+			<h1><a href="dashboard.html">Dashboard</a> Stakeholder Log</h1>
+			<nav id="nav">
+				<ul>
+					<li><a href="index.html">Dashboard</a></li>
+					<li>
+						<a href="#" class="icon solid fa-angle-down">Layouts</a>
+						<ul>
+							<li><a href="Add_Project.html">Add Project</a></li>
+							<li><a href="Add_Stake.html">Add Stakeholder</a></li>
+							<li><a href="Communication.html">Communication Log</a></li>
+							<li><a href="Reports.html">Reports</a></li>
+							<li><a href="Stake_List.html">Stakeholder List</a></li>
+						</ul>
+					</li>
+					<li id="user-info"></li>
+					<li><a href="Login.html" class="button" id="login-button" style="display:none;">Login</a></li>
+					<li><a href="Signup.html" class="button" id="signup-button" style="display:none;">Sign Up</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<!-- Banner Section -->
+		<section id="banner">
+			<h2>Stakeholder Log</h2>
+			<h3>Manage Stakeholder Communication with Ease</h3>
+			<p>Track interactions, follow-ups, and strategic insights in one centralized dashboard.</p>
+			<ul class="actions special">
+				<li><a href="#" class="button primary" onclick="checkLoginAndRedirect('addStakeholder')">Add New Stakeholder</a></li>
+				<li><a href="#" class="button" onclick="checkLoginAndRedirect('logCommunication')">Log New Communication</a></li>
+			</ul>
+		</section>
+
+		<!-- Main Content Section -->
+		<section id="main" class="container">
+
+			<section class="box special">
+				<header class="major">
+					<h2>Stay Organized & Drive Collaboration</h2>
+					<p>Successful stakeholder management starts with clear and consistent communication. This dashboard enables you to centralize all key updates, manage relationships, and make informed decisions using real-time data.</p>
+				</header>
+				<span class="image featured"><img src="images/pic01.jpg" alt="Stakeholder Communication Image" /></span>
+			</section>
+
+			<section class="box special features">
+				<div class="features-row">
+					<section>
+						<span class="icon solid major fa-bolt accent2"></span>
+						<h3><b>Total Stakeholders</b><br><p id="total-stakeholders">Loading...</p></h3>
+						<p>Monitor all project stakeholders in one view and never lose track of key individuals.</p>
+					</section>
+					<section>
+						<span class="icon solid major fa-chart-area accent3"></span>
+						<h3><b>Recent Communications</b><br><p id="recent-communications">Loading...</p></h3>
+						<p>Stay informed about your most recent interactions and updates.</p>
+					</section>
+				</div>
+
+				<div class="features-row">
+					<section>
+						<span class="icon solid major fa-cloud accent4"></span>
+						<h3><b>Upcoming Follow-Ups</b><br><p id="upcoming-followups">Loading...</p></h3>
+						<p>Keep relationships warm and ensure no follow-up is ever missed.</p>
+					</section>
+					<section>
+						<span class="icon solid major fa-lock accent5"></span>
+						<h3><b>Pending Actions</b><br><p id="pending-actions">Loading...</p></h3>
+						<p>Track pending tasks and ensure timely resolution to maintain progress.</p>
+					</section>
+				</div>
+			</section>
+
+		</section>
+
+		<!-- Call to Action -->
+		<section id="cta">
+			<h2>Thank You for Using Stakeholder Log</h2>
+			<p>We're here to support your stakeholder management journey. Reach out anytime for help or suggestions!</p>
+		</section>
+
+		<!-- Footer -->
+		<footer id="footer">
+			<ul class="icons">
+				<li><a href="https://x.com/omvashishtha039" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+				<li><a href="https://www.linkedin.com/in/omvashishtha039/" class="icon brands fa-linkedin"><span class="label">LinkedIn</span></a></li>
+				<li><a href="https://github.com/omvashishtha039" class="icon brands fa-github"><span class="label">GitHub</span></a></li>
+				<li><a href="https://www.credly.com/users/omvashishtha039" class="icon brands fa-dribbble"><span class="label">Credly</span></a></li>
+			</ul>
+			<ul class="copyright">
+				<li>&copy; FOMM. All rights reserved.</li><li>Design: Om Vashishtha <a href="https://www.linkedin.com/in/omvashishtha039/">FOMM</a></li>
+			</ul>
+		</footer>
+
+	</div>
+
+	<!-- Scripts -->
+	<script src="assets/js/jquery.min.js"></script>
+	<script src="assets/js/jquery.dropotron.min.js"></script>
+	<script src="assets/js/jquery.scrollex.min.js"></script>
+	<script src="assets/js/browser.min.js"></script>
+	<script src="assets/js/breakpoints.min.js"></script>
+	<script src="assets/js/util.js"></script>
+	<script src="assets/js/main.js"></script>
+
+	<!-- Authentication & Dashboard Logic -->
+	<script>
+		// Function to protect the dashboard page by checking login token
+		function protectDashboardPage() {
+			// Get the token from localStorage
+			const token = localStorage.getItem("access_token");
+
+			// If token is missing, alert user and redirect to login page
+			if (!token) {
+				setTimeout(() => {
+					alert("You need to login to access the dashboard.");
+					window.location.href = "Login.html";
+				}, 100);
+				return;
+			}
+
+			// Token exists, verify it by fetching user info from backend
+			fetch("http://127.0.0.1:5000/user-info", {
+				method: "GET",
+				headers: {
+					'Authorization': 'Bearer ' + token
+				}
+			})
+			.then(res => {
+				if (!res.ok) throw new Error("Unauthorized");
+				return res.json();
+			})
+			.then(data => {
+				// Show logged-in user's name and logout button
+				const userInfo = document.getElementById("user-info");
+				userInfo.innerHTML = `
+					<span>Welcome, ${data.name}</span>
+					<button onclick="logout()" style="margin-left:10px; padding:5px 10px;">Logout</button>
+				`;
+
+				// Hide Login and Signup buttons once logged in
+				document.getElementById("signup-button").style.display = "none";
+				document.getElementById("login-button").style.display = "none";
+
+				// Fetch and display dashboard stats
+				fetchDashboardStats();
+			})
+			.catch(err => {
+				console.error("Token invalid or expired:", err);
+				// Clear invalid token and redirect to login with message
+				localStorage.removeItem("access_token");
+				alert("Session expired or invalid. Please log in again.");
+				window.location.href = "Login.html";
+				});
+		}
+
+		// Logout function clears token and redirects to login page
+		function logout() {
+			localStorage.removeItem("access_token");
+			alert("Logged out successfully!");
+			window.location.href = "Login.html";
+			}
+
+		// Redirect user to pages based on login status and action
+		function checkLoginAndRedirect(action) {
+			const token = localStorage.getItem("access_token");
+			if (!token) {
+				alert("Please login to continue.");
+				window.location.href = "Login.html";
+			} else {
+				if (action === "addStakeholder") {
+					window.location.href = "Add_Stake.html";
+				} else if (action === "logCommunication") {
+					window.location.href = "Communication.html";
+				}
+			}
+		}
+
+		// Fetch dashboard statistics from backend and display in UI
+		function fetchDashboardStats() {
+			const token = localStorage.getItem("access_token");
+			if (!token) return;
+
+			fetch("http://127.0.0.1:5000/dashboard-stats", {
+				headers: {
+					"Authorization": "Bearer " + token
+				}
+			})
+			.then(res => res.json())
+			.then(data => {
+				document.getElementById("total-stakeholders").textContent = data.totalStakeholders;
+				document.getElementById("recent-communications").textContent = data.recentCommunications;
+				document.getElementById("upcoming-followups").textContent = data.upcomingFollowUps;
+				document.getElementById("pending-actions").textContent = data.pendingActions;
+			})
+			.catch(err => {
+				console.error("Error fetching dashboard stats:", err);
+			});
+		}
+
+		// Run protection and load logic as soon as page loads
+		protectDashboardPage();
+	</script>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sign Up - Stakeholder Log</title>
+  <link rel="stylesheet" href="assets/css/main.css" />
+  <style>
+    .form-container {
+      max-width: 400px;
+      margin: 5% auto;
+      padding: 2rem;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+
+    .form-container h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .form-container input,
+    .form-container button {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 1rem;
+      border-radius: 5px;
+    }
+
+    .form-container input {
+      border: 1px solid #ccc;
+    }
+
+    .form-container button {
+      background: #231F20;
+      color: #fff;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .form-container .link {
+      text-align: center;
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="form-container">
+    <h2>Sign Up</h2>
+    <input type="text" id="signupName" placeholder="Full Name" required />
+    <input type="email" id="signupEmail" placeholder="Email" required />
+    <input type="password" id="signupPassword" placeholder="Password" required />
+    <button id="signupButton" onclick="signupUser()">Sign Up</button>
+    <div class="link">
+      <p>Already have an account? <a href="login.html">Login</a></p>
+    </div>
+  </div>
+
+  <script>
+    async function signupUser() {
+      const name = document.getElementById("signupName").value;
+      const email = document.getElementById("signupEmail").value;
+      const password = document.getElementById("signupPassword").value;
+      const signupButton = document.getElementById("signupButton");
+
+      if (!name || !email || !password) {
+        alert("All fields are required!");
+        return;
+      }
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        alert("Please enter a valid email address.");
+        return;
+      }
+
+      signupButton.disabled = true;
+
+      try {
+        const response = await fetch('http://127.0.0.1:5000/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ name, email, password }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          alert("Signup successful! Please login.");
+          window.location.href = "login.html";
+        } else {
+          alert("Error: " + (data.message || data.error));
+        }
+      } catch (error) {
+        console.error("Signup request failed:", error);
+        alert("Something went wrong! Please try again later.");
+      } finally {
+        signupButton.disabled = false;
+      }
+    }
+
+    function checkLoginAndRedirect() {
+      const token = localStorage.getItem("access_token");
+      if (token) {
+        alert("You are already logged in!");
+        window.location.href = "dashboard.html";
+      }
+    }
+
+    window.onload = checkLoginAndRedirect;
+  </script>
+</body>
+</html>

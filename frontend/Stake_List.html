@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Stakeholder List</title>
+	<link rel="stylesheet" href="assets/css/main.css" />
+</head>
+<body class="is-preload">
+	<div id="page-wrapper">
+
+		<!-- Header -->
+		<header id="header">
+			<h1><a href="index.html">Stakeholder</a> Log</h1>
+			<nav id="nav">
+				<ul>
+					<li><a href="index.html">Dashboard</a></li>
+					<li><a href="Add_Stake.html">Add Stakeholder</a></li>
+					<li><a href="Communication.html">Communication Log</a></li>
+					<li><a href="Reports.html">Reports</a></li>
+					<li id="user-info"></li>
+				</ul>
+			</nav>
+		</header>
+
+		<!-- Main -->
+		<section id="main" class="container">
+			<header class="major">
+				<h2>Stakeholder List</h2>
+			</header>
+
+			<input type="text" id="search" placeholder="Search by name or organization" class="box" />
+
+			<div class="table-wrapper">
+				<table>
+					<thead>
+						<tr>
+							<th>Name</th>
+							<th>Email</th>
+							<th>Phone</th>
+							<th>Role</th>
+							<th>Organization</th>
+						</tr>
+					</thead>
+					<tbody id="stakeholder-table-body">
+						<!-- Populated via JS -->
+					</tbody>
+				</table>
+			</div>
+		</section>
+
+		<!-- Footer -->
+		<footer id="footer">
+			<p>&copy; FOMM. Built by Om Vashishtha</p>
+		</footer>
+	</div>
+
+	<!-- Scripts -->
+	<script src="assets/js/jquery.min.js"></script>
+	<script src="assets/js/main.js"></script>
+
+	<script>
+		document.addEventListener("DOMContentLoaded", () => {
+			const token = localStorage.getItem("token");
+			if (!token) {
+				alert("Please log in first.");
+				window.location.href = "Login.html";
+				return;
+			}
+
+			const tableBody = document.getElementById("stakeholder-table-body");
+
+			function loadStakeholders() {
+				fetch("http://127.0.0.1:5000/get-stakeholders", {
+					headers: {
+						"Authorization": "Bearer " + token
+					}
+				})
+				.then(res => res.json())
+				.then(data => {
+					tableBody.innerHTML = "";
+					data.forEach(stakeholder => {
+						const row = `<tr>
+							<td>${stakeholder.name}</td>
+							<td>${stakeholder.email}</td>
+							<td>${stakeholder.phone || ""}</td>
+							<td>${stakeholder.role || ""}</td>
+							<td>${stakeholder.organization || ""}</td>
+						</tr>`;
+						tableBody.innerHTML += row;
+					});
+				})
+				.catch(err => {
+					alert("Failed to load stakeholder data.");
+					console.error(err);
+				});
+			}
+
+			// Live Search Filter
+			document.getElementById("search").addEventListener("input", function() {
+				const value = this.value.toLowerCase();
+				const rows = tableBody.getElementsByTagName("tr");
+				for (let row of rows) {
+					const name = row.cells[0].textContent.toLowerCase();
+					const org = row.cells[4].textContent.toLowerCase();
+					row.style.display = name.includes(value) || org.includes(value) ? "" : "none";
+				}
+			});
+
+			loadStakeholders();
+		});
+	</script>
+</body>
+</html>
