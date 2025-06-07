@@ -1,4 +1,4 @@
-# 📊 Stakeholder Communication & Log Dashboard
+# Stakeholder Communication & Log Dashboard
 
 A full-stack web-based platform to manage stakeholder interactions, log communications, and monitor project touchpoints efficiently — designed for Project Managers and teams.
 
